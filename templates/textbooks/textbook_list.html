@@ -9,6 +9,15 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
   >
+  <style>
+    /* Ensures the image is fully displayed without cropping */
+    .book-image {
+      width: 100%;
+      height: 200px;
+      object-fit: contain; /* Show the full image without cropping */
+      background-color: #f8f9fa; /* Light background for images */
+    }
+  </style>
 </head>
 <body class="bg-light">
 
@@ -24,8 +33,6 @@
     <div class="col-12 col-md-3 mb-4">
       <div class="bg-white p-3 border rounded">
         <h5 class="mb-3">Filter by Course Code</h5>
-        <!-- Submitting this form triggers GET ?course_code=XYZ, 
-             which the view then redirects to /textbooks/XYZ/ -->
         <form method="GET" action="">
           <div class="mb-3">
             <label for="course_code" class="form-label">Enter Course Code:</label>
@@ -40,19 +47,6 @@
           </div>
           <button type="submit" class="btn btn-primary w-100">Filter</button>
         </form>
-
-        <hr>
-        <h6>Select a Course:</h6>
-        <ul class="list-group">
-          {% for code in course_codes %}
-          <li class="list-group-item">
-            <!-- This link goes directly to /textbooks/code/ -->
-            <a href="{% url 'textbook_list_with_code' course_code=code %}">
-              {{ code }}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
       </div>
     </div>
 
@@ -72,16 +66,14 @@
               {% if textbook.image %}
               <img 
                 src="{{ textbook.image.url }}" 
-                class="card-img-top" 
-                alt="{{ textbook.title }}" 
-                style="max-height: 200px; object-fit: cover;"
+                class="card-img-top book-image" 
+                alt="{{ textbook.title }}"
               >
               {% else %}
               <img 
                 src="https://via.placeholder.com/300x200?text=No+Image" 
-                class="card-img-top" 
-                alt="No image available" 
-                style="max-height: 200px; object-fit: cover;"
+                class="card-img-top book-image" 
+                alt="No image available"
               >
               {% endif %}
               <div class="card-body">
