@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Textbooks for {{ course_code }}</title>
+</head>
+<body>
+<body>
+    <h1>Textbooks for {{ course_code }}</h1>
+    {% if textbooks %}
+        <ul>
+            {% for textbook in textbooks %}
+                <li>
+                    <strong>Title:</strong> {{ textbook.title }}<br>
+                    <strong>Author:</strong> {{ textbook.author }}<br>
+                    {% if textbook.edition %}
+                        <strong>Edition:</strong> {{ textbook.edition }}<br>
+                    {% endif %}
+                    <strong>Condition:</strong> {{ textbook.condition }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No textbooks are currently available for this course.</p>
+    {% endif %}
+</body>
+</html>
