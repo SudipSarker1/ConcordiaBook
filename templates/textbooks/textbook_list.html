@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>All Textbooks</title>
+  <title>Textbooks</title>
   <!-- Bootstrap CSS via CDN -->
   <link
     rel="stylesheet"
@@ -24,6 +24,8 @@
     <div class="col-12 col-md-3 mb-4">
       <div class="bg-white p-3 border rounded">
         <h5 class="mb-3">Filter by Course Code</h5>
+        <!-- Submitting this form triggers GET ?course_code=XYZ, 
+             which the view then redirects to /textbooks/XYZ/ -->
         <form method="GET" action="">
           <div class="mb-3">
             <label for="course_code" class="form-label">Enter Course Code:</label>
@@ -32,7 +34,7 @@
               name="course_code" 
               id="course_code" 
               class="form-control"
-              value="{{ selected_code|default_if_none:'' }}"
+              value="{{ selected_code }}"
               placeholder="e.g. COEN6511"
             >
           </div>
@@ -44,8 +46,8 @@
         <ul class="list-group">
           {% for code in course_codes %}
           <li class="list-group-item">
-            <!-- We'll build a link that passes ?course_code=code -->
-            <a href="?course_code={{ code }}">
+            <!-- This link goes directly to /textbooks/code/ -->
+            <a href="{% url 'textbook_list_with_code' course_code=code %}">
               {{ code }}
             </a>
           </li>
@@ -56,7 +58,12 @@
 
     <!-- Main Content: Book List -->
     <div class="col-12 col-md-9">
-      <h2 class="mb-4">Available Textbooks</h2>
+      {% if selected_code %}
+        <h2 class="mb-4">Textbooks for {{ selected_code }}</h2>
+      {% else %}
+        <h2 class="mb-4">All Available Textbooks</h2>
+      {% endif %}
+      
       {% if textbooks %}
         <div class="row">
           {% for textbook in textbooks %}

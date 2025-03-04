@@ -1,28 +1,36 @@
 # textbooks/views.py
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Textbook
 
-def textbook_list(request):
+def textbook_list(request, course_code=None):
     """
-    Shows all available textbooks by default.
-    If 'course_code' is provided in GET, filters by that code.
-    Displays a 'no textbooks' message if none are found.
+    Displays all textbooks by default (at /textbooks/).
+    If 'course_code' is in the GET data, redirect to /textbooks/<that code>.
+    If the URL includes /textbooks/<course_code>/, show only that course.
+    Uses ONE template: textbook_list.html
     """
-    # Start with all available textbooks
-    textbooks = Textbook.objects.filter(availability=True)
+    # 1) If the user typed a code in the filter form (?course_code=XYZ),
+    #    redirect to /textbooks/XYZ/
+    typed_code = request.GET.get('course_code', '').strip()
+    if typed_code:
+        return redirect('textbook_list_with_code', course_code=typed_code)
 
-    # For the left-side filter: distinct course codes
+    # 2) If we have a course_code in the URL, filter by that
+    if course_code:
+        textbooks = Textbook.objects.filter(course_code=course_code, availability=True)
+        selected_code = course_code
+    else:
+        # No code in the URL -> show ALL textbooks
+        textbooks = Textbook.objects.filter(availability=True)
+        selected_code = ''
+
+    # 3) We also want a list of distinct course codes for the left-side filter
     course_codes = Textbook.objects.values_list('course_code', flat=True).distinct()
-
-    # Check if the user submitted a course code in the query parameters
-    code = request.GET.get('course_code', '').strip()
-    if code:
-        textbooks = textbooks.filter(course_code=code)
 
     context = {
         'textbooks': textbooks,
         'course_codes': course_codes,
-        'selected_code': code,  # to remember what the user typed
+        'selected_code': selected_code,  # so we can display it in the form if needed
     }
     return render(request, 'textbooks/textbook_list.html', context)
